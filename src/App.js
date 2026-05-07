@@ -1,4 +1,4 @@
-import HireReady from './HireReady';
+import HireReady from './HireReady_2';
 export default function App() {
   return <HireReady />;
 }
