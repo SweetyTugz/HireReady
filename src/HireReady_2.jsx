@@ -1,13 +1,83 @@
-import { useState, useRef, useEffect } from "react";
+// import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 // ─── CURRENCY DETECTION ──────────────────────────────────────
-function detectCurrency() {
-    try {
-        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
-        if (tz.includes("Dubai") || tz.includes("Abu_Dhabi") || tz.includes("Asia/Dubai")) return { code:"AED", symbol:"AED", price:"54.99", monthly:"54.99/mo" };
-        if (tz.includes("London") || tz.includes("Europe/London")) return { code:"GBP", symbol:"£", price:"11.99", monthly:"£11.99/mo" };
-    } catch(e) {}
-    return { code:"USD", symbol:"$", price:"14.99", monthly:"$14.99/mo" };
+// function detectCurrency() {
+//     try {
+//         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+//         if (tz.includes("Dubai") || tz.includes("Abu_Dhabi") || tz.includes("Asia/Dubai")) return { code:"AED", symbol:"AED", price:"54.99", monthly:"54.99/mo" };
+//         if (tz.includes("London") || tz.includes("Europe/London")) return { code:"GBP", symbol:"£", price:"11.99", monthly:"£11.99/mo" };
+//     } catch(e) {}
+//     return { code:"USD", symbol:"$", price:"14.99", monthly:"$14.99/mo" };
+// }
+
+// ─── UPDATED CURRENCY DETECTION ──────────────────────────────
+const CURRENCIES = {
+    USD: { code: "USD", symbol: "$", price: "14.99", monthly: "$14.99/mo" },
+    GBP: { code: "GBP", symbol: "£", price: "11.99", monthly: "£11.99/mo" },
+    AED: { code: "AED", symbol: "AED", price: "54.99", monthly: "54.99/mo" }
+};
+
+function HireReady() {
+    // 1. Initialize state with the detected currency
+    const [currency, setCurrency] = useState(() => {
+        try {
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+            if (tz.includes("Dubai") || tz.includes("Abu_Dhabi")) return CURRENCIES.AED;
+            if (tz.includes("London") || tz.includes("Europe/London")) return CURRENCIES.GBP;
+        } catch (e) {}
+        return CURRENCIES.USD;
+    });
+
+    // ... (rest of your state)
+
+    return (
+        <div className="shell">
+            <div className="sidebar">
+                {/* ... existing sidebar content ... */}
+
+                <div className="sb-footer">
+                    {!isPro ? (
+                        <div className="sb-pro-box">
+                            <strong>✦ Upgrade to Pro</strong>
+
+                            {/* ─── ADDED CURRENCY SWITCHER ─── */}
+                            <div style={{ display: 'flex', gap: '4px', marginBottom: '10px', justifyContent: 'center' }}>
+                                {Object.keys(CURRENCIES).map(key => (
+                                    <button
+                                        key={key}
+                                        onClick={() => setCurrency(CURRENCIES[key])}
+                                        style={{
+                                            padding: '2px 6px',
+                                            fontSize: '9px',
+                                            borderRadius: '4px',
+                                            border: '1px solid var(--border2)',
+                                            background: currency.code === key ? 'var(--accent)' : 'transparent',
+                                            color: currency.code === key ? '#fff' : 'var(--muted)',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        {key}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <p>PDF downloads · Cover letters · LinkedIn optimizer</p>
+                            <button className="btn btn-gold btn-sm" style={{width:"100%"}} onClick={() => setIsPro(true)}>
+                                {currency.symbol}{currency.price}/mo
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="sb-pro-box">
+                            <strong style={{color:"var(--green)"}}>✓ Pro Active</strong>
+                            <p style={{color:"var(--muted)"}}>All features unlocked. {currency.symbol}{currency.price}/mo</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+            {/* ... rest of your component ... */}
+        </div>
+    );
 }
 
 // ─── MOCK DATA ───────────────────────────────────────────────
